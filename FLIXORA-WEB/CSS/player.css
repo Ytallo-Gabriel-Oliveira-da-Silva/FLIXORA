@@ -1,0 +1,100 @@
+/* =========================================================
+   FLIXORA — Custom Video Player
+   ========================================================= */
+.player-page{ background:#000; min-height:100vh; }
+.player-shell{
+  position:relative; width:100%; max-height:100vh; aspect-ratio:16/9; background:#000;
+  overflow:hidden;
+}
+.player-shell video{ width:100%; height:100%; object-fit:contain; background:#000; display:block; }
+
+.player-back{
+  position:absolute; top:18px; left:18px; z-index:20; width:42px; height:42px; border-radius:50%;
+  background:rgba(8,8,12,.55); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.15);
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  opacity:1; transition:opacity .3s var(--ease);
+}
+
+.player-info{
+  position:absolute; top:18px; left:72px; right:18px; z-index:20; color:#fff;
+  transition:opacity .3s var(--ease);
+}
+.player-info h2{ margin:0; font-size:1.05rem; font-weight:700; }
+.player-info span{ font-size:.78rem; color:var(--text-dim); }
+
+.fx-controls{
+  position:absolute; left:0; right:0; bottom:0; z-index:20; padding:10px 20px 16px;
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.85) 65%);
+  opacity:1; transition:opacity .3s var(--ease), transform .3s var(--ease);
+}
+.player-shell.idle .fx-controls,
+.player-shell.idle .player-back,
+.player-shell.idle .player-info{ opacity:0; pointer-events:none; }
+
+.fx-progress{
+  position:relative; height:5px; border-radius:4px; background:rgba(255,255,255,.22);
+  cursor:pointer; margin-bottom:14px;
+}
+.fx-progress__buffered{ position:absolute; top:0; left:0; height:100%; border-radius:4px; background:rgba(255,255,255,.35); }
+.fx-progress__fill{ position:absolute; top:0; left:0; height:100%; border-radius:4px; background:linear-gradient(90deg,var(--purple),var(--purple-light)); }
+.fx-progress__handle{
+  position:absolute; top:50%; width:13px; height:13px; border-radius:50%; background:#fff;
+  transform:translate(-50%,-50%); box-shadow:0 0 0 4px rgba(168,85,247,.35);
+  opacity:0; transition:opacity .2s var(--ease);
+}
+.fx-progress:hover .fx-progress__handle{ opacity:1; }
+
+.fx-row{ display:flex; align-items:center; gap:6px; color:#fff; }
+.fx-row .spacer{ flex:1; }
+.fx-btn{
+  width:38px; height:38px; border-radius:50%; border:none; background:transparent; color:#fff;
+  display:flex; align-items:center; justify-content:center; transition:background .2s var(--ease);
+}
+.fx-btn:hover{ background:rgba(255,255,255,.14); }
+.fx-time{ font-size:.8rem; color:var(--text-dim); font-variant-numeric:tabular-nums; margin:0 6px; }
+
+.fx-vol{ display:flex; align-items:center; gap:6px; }
+.fx-vol input[type=range]{
+  width:80px; accent-color:var(--purple-light); cursor:pointer;
+}
+
+.fx-menu{ position:relative; }
+.fx-menu__panel{
+  position:absolute; bottom:48px; right:0; background:rgba(20,20,28,.96); backdrop-filter:blur(10px);
+  border:1px solid var(--line); border-radius:10px; min-width:160px; padding:6px; display:none; flex-direction:column;
+}
+.fx-menu.open .fx-menu__panel{ display:flex; }
+.fx-menu__panel button{
+  text-align:left; background:transparent; border:none; color:var(--text-dim); padding:9px 12px; border-radius:6px; font-size:.85rem;
+}
+.fx-menu__panel button:hover{ background:rgba(255,255,255,.06); color:#fff; }
+.fx-menu__panel button.active{ color:var(--purple-light); font-weight:700; }
+
+.fx-center-btn{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:15;
+  width:76px; height:76px; border-radius:50%; background:rgba(8,8,12,.55); backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.2); color:#fff; display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .2s var(--ease), transform .2s var(--ease);
+}
+.player-shell:hover .fx-center-btn,
+.player-shell.paused .fx-center-btn{ opacity:1; }
+.fx-center-btn:hover{ transform:translate(-50%,-50%) scale(1.06); }
+
+.player-badge-demo{
+  position:absolute; top:18px; right:18px; z-index:20;
+}
+
+.player-below{ max-width:var(--maxw); margin:0 auto; padding:26px clamp(16px,4vw,48px) 60px; }
+.player-below h1{ font-size:1.5rem; margin:0 0 8px; }
+.player-below p{ color:var(--text-dim); max-width:70ch; line-height:1.6; }
+
+.player-notice{
+  display:flex; gap:12px; align-items:flex-start; background:rgba(232,184,75,.08);
+  border:1px solid rgba(232,184,75,.3); padding:14px 16px; border-radius:12px; margin-bottom:20px;
+  color:#EBD9A8; font-size:.85rem; line-height:1.55;
+}
+
+@media (max-width:700px){
+  .fx-vol input[type=range]{ display:none; }
+  .fx-time{ font-size:.72rem; }
+}
