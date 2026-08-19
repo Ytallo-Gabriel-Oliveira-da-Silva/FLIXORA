@@ -1,6 +1,8 @@
 import { route, notFound, initRouter } from './core/router.js';
 import { tmdb } from './core/tmdb.js';
 import { posterFor, itemTitle, itemYear, itemKind, bindCardEvents, emptyState } from './core/ui.js';
+import { initAuth, currentUser } from './core/auth.js';
+import { icon } from './core/icons.js';
 
 import { HomeView } from './views/home.js';
 import { CatalogView } from './views/catalog.js';
@@ -8,7 +10,17 @@ import { GenresView, GenreDetailView, TrendingView, FavoritesView } from './view
 import { DetailView } from './views/detail.js';
 import { PlayerView } from './views/player-view.js';
 import { PremiumView } from './views/premium.js';
+import { GenresView, GenreDetailView, TrendingView, FavoritesView, NetflixView } from './views/netflix.js';
+import { NetflixView } from './views/netflix.js';
+import { DisneyView } from './views/disney.js';
+import { LancamentosView } from './views/lancamentos.js';
+
 import { AboutView } from './views/about.js';
+import { LoginView } from './views/login.js';
+import { RegisterView } from './views/register.js';
+import { ResetPasswordView } from './views/reset-password.js';
+import { AccountView } from './views/account.js';
+import { FavoritesView } from './views/lists.js';
 
 // ---------- Rotas ----------
 route('/', HomeView);
@@ -20,10 +32,55 @@ route('/favoritos', FavoritesView);
 route('/titulo/:kind/:id', DetailView);
 route('/assistir/:kind/:id', PlayerView);
 route('/premium', PremiumView);
+route('/netflix', NetflixView);
+route('/disney', DisneyView);
+route('/lancamentos', LancamentosView);
 route('/sobre', AboutView);
+route('/conta', AccountView);
+route('/entrar', LoginView);
+route('/criar-conta', RegisterView);
+route('/recuperar-senha', ResetPasswordView);
 notFound(() => emptyState('Página não encontrada', 'Verifique o endereço ou volte para o início.', '🧭'));
 
+const profileBtn = document.getElementById('profileBtn');
+function updateProfileUI(user){
+  if(!profileBtn) return;
+  profileBtn.type = 'button';
+  profileBtn.style.cursor = 'pointer';
+  if(user){
+    const initials = user.displayName ? user.displayName.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U');
+    profileBtn.innerHTML = user.photoURL ? '' : initials;
+    profileBtn.style.backgroundImage = user.photoURL ? `url('${user.photoURL}')` : '';
+    profileBtn.style.backgroundSize = 'cover';
+    profileBtn.style.backgroundPosition = 'center';
+    profileBtn.style.color = user.photoURL ? '#fff' : '';
+    profileBtn.setAttribute('title', `Conectado como ${user.email}`);
+  } else {
+    profileBtn.innerHTML = 'Entrar';
+    profileBtn.style.backgroundImage = '';
+    profileBtn.style.color = '';
+    profileBtn.setAttribute('title', 'Fazer login ou criar conta');
+  }
+}
+
+profileBtn?.addEventListener('click', ()=>{
+  location.hash = currentUser() ? '/conta' : '/entrar';
+});
+
+// brand logo injection
+const brandMark = document.querySelector('.brand__mark');
+if(brandMark){ brandMark.innerHTML = icon('logo'); }
+
+initAuth(updateProfileUI);
 initRouter();
+
+// Update UI immediately when profile is changed via modal
+window.addEventListener('profileUpdated', (e)=>{
+  const d = e.detail || {};
+  if(!profileBtn) return;
+  if(d.photoURL){ profileBtn.style.backgroundImage = `url('${d.photoURL}')`; profileBtn.innerHTML = ''; profileBtn.style.color = '#fff'; }
+  if(d.displayName){ profileBtn.setAttribute('title', `Conectado como ${currentUser()?.email || ''}`); }
+});
 
 // ---------- Menu mobile ----------
 const navToggle = document.getElementById('navToggle');

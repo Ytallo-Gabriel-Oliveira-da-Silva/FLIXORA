@@ -12,14 +12,20 @@ async function request(path, params={}){
     throw new DemoModeError('Sem chave TMDB configurada — usando modo demo.');
   }
   const url = new URL(`${CONFIG.TMDB_BASE}${path}`);
-  url.searchParams.set('api_key', CONFIG.apiKey);
   url.searchParams.set('language', CONFIG.lang);
   Object.entries(params).forEach(([k,v]) => v !== undefined && url.searchParams.set(k, v));
 
-  const key = url.toString();
+  const headers = new Headers();
+  if(CONFIG.TMDB_READ_ACCESS_TOKEN){
+    headers.set('Authorization', `Bearer ${CONFIG.TMDB_READ_ACCESS_TOKEN}`);
+  } else if(CONFIG.apiKey){
+    url.searchParams.set('api_key', CONFIG.apiKey);
+  }
+
+  const key = `${url.toString()}|${CONFIG.TMDB_READ_ACCESS_TOKEN || CONFIG.apiKey}`;
   if(cache.has(key)) return cache.get(key);
 
-  const res = await fetch(url.toString());
+  const res = await fetch(url.toString(), { headers });
   if(!res.ok){
     const body = await res.json().catch(()=>({}));
     throw new Error(body.status_message || `Erro TMDB (${res.status})`);
@@ -101,6 +107,15 @@ export const tmdb = {
     }
   },
 
+  async peoplePopular(page=1){
+    try{
+      const d = await request('/person/popular', { page });
+      return d.results.map(r => ({ ...r, media_type: 'person' }));
+    }catch(e){
+      return [];
+    }
+  },
+
   async details(kind, id){
     try{
       const d = await request(`/${kind}/${id}`, { append_to_response: 'credits,videos,similar' });
@@ -108,5 +123,33 @@ export const tmdb = {
     }catch(e){
       return demoDetail(id) || null;
     }
+  },
+
+  // ========== NOVOS MÉTODOS PARA DISCOVER ==========
+  // Permite buscar filmes com parâmetros (ex: with_watch_providers, sort_by, etc.)
+  async movies(params = {}) {
+    try {
+      const d = await request('/discover/movie', params);
+      return withType(d.results, 'movie');
+    } catch(e) {
+      return DEMO_MOVIES; // fallback seguro
+    }
+  },
+
+  // Permite buscar séries com parâmetros
+  async tv(params = {}) {
+    try {
+      const d = await request('/discover/tv', params);
+      return withType(d.results, 'tv');
+    } catch(e) {
+      return DEMO_SERIES; // fallback seguro
+    }
+  },
+
+  // Método genérico discover (kind = 'movie' ou 'tv')
+  async discover(kind, params = {}) {
+    if (kind === 'movie') return this.movies(params);
+    if (kind === 'tv') return this.tv(params);
+    return []; // caso inválido
   },
 };

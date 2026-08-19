@@ -3,6 +3,8 @@ import { itemTitle, backdropFor, posterFor, railHTML, bindCardEvents, emptyState
 import { favorites, toast } from '../core/state.js';
 import { imgUrl } from '../core/config.js';
 import { posterPlaceholder } from '../core/poster.js';
+import { getComments, addComment, commentHTML } from '../core/comments.js';
+import { currentUser } from '../core/auth.js';
 
 export async function DetailView({ kind, id }){
   const item = await tmdb.details(kind, id);
@@ -14,6 +16,11 @@ export async function DetailView({ kind, id }){
   const isFav = favorites.has(kind, item.id);
   const cast = item.credits?.cast?.slice(0, 10) || [];
   const similar = item.similar?.results?.slice(0, 12) || [];
+
+  const audioLanguages = (item.spoken_languages || []).map(l => l.english_name || l.name).join(', ') || 'Português, Inglês';
+  const audioInfo = 'Dolby Digital 5.1 · Áudio espacial simulado';
+  const comments = getComments(kind, id);
+  const user = currentUser();
 
   const wrap = document.createElement('div');
   wrap.innerHTML = `
@@ -39,12 +46,14 @@ export async function DetailView({ kind, id }){
           <a class="btn btn-primary" href="#/assistir/${kind}/${item.id}">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Assistir agora
           </a>
-          <button class="btn btn-ghost" id="favBtn">${isFav ? '♥ Nos favoritos' : '♡ Adicionar aos favoritos'}</button>
+          <button class="btn btn-ghost" id="myListBtn">${isFav ? '✔ Na minha lista' : '+ Minha lista'}</button>
           <button class="btn btn-outline" id="shareBtn">🔗 Compartilhar</button>
         </div>
         <div class="detail-extra">
           <div><h5>Status</h5><p>${statusLabel(item.status)}</p></div>
+          <div><h5>Áudio</h5><p>${audioInfo}</p></div>
           <div><h5>Idioma original</h5><p>${(item.original_language || 'pt').toUpperCase()}</p></div>
+          <div><h5>Legendas</h5><p>${audioLanguages}</p></div>
           <div><h5>Popularidade</h5><p>${item.popularity ? Math.round(item.popularity) : '—'}</p></div>
           <div><h5>Avaliações</h5><p>${item.vote_count ?? '—'} votos</p></div>
         </div>
@@ -64,22 +73,80 @@ export async function DetailView({ kind, id }){
       </div>
     </section>` : ''}
 
+    <section class="section comments-section">
+      <div class="section__head">
+        <h2 class="section__title">Comentários</h2>
+        <span class="comment-summary">${comments.length} avaliações</span>
+      </div>
+      ${user ? `
+        <form class="comment-form" id="commentForm">
+          <div class="comment-form-row">
+            <textarea id="commentMessage" placeholder="Compartilhe sua opinião sobre ${title}" required></textarea>
+            <div class="comment-options">
+              <label for="commentRating">Avaliação</label>
+              <select id="commentRating" required>
+                <option value="5">5.0 ★</option>
+                <option value="4.5">4.5 ★</option>
+                <option value="4">4.0 ★</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Enviar comentário</button>
+        </form>
+      ` : `
+        <div class="comment-cta">
+          <p>Faça login para adicionar um comentário e compartilhar sua experiência.</p>
+          <a class="btn btn-primary" href="#/entrar">Entrar</a>
+        </div>
+      `}
+      <div class="comment-list">
+        ${comments.map(commentHTML).join('')}
+      </div>
+    </section>
+
     ${railHTML('Você também pode gostar', similar, { icon:'✨' })}
     <div style="height:50px;"></div>
   `;
 
   bindCardEvents(wrap);
 
-  wrap.querySelector('#favBtn').addEventListener('click', (e)=>{
+  wrap.querySelector('#myListBtn').addEventListener('click', (e)=>{
     const nowFav = favorites.toggle({ ...item, media_type:kind });
-    e.target.innerHTML = nowFav ? '♥ Nos favoritos' : '♡ Adicionar aos favoritos';
-    toast(nowFav ? 'Adicionado aos favoritos' : 'Removido dos favoritos');
+    e.target.innerHTML = nowFav ? '✔ Na minha lista' : '+ Minha lista';
+    toast(nowFav ? 'Adicionado à minha lista' : 'Removido da minha lista');
   });
   wrap.querySelector('#shareBtn').addEventListener('click', async ()=>{
     const url = location.href;
     try{ await navigator.clipboard.writeText(url); toast('Link copiado!'); }
     catch(e){ toast(url); }
   });
+
+  const commentForm = wrap.querySelector('#commentForm');
+  if(commentForm){
+    commentForm.addEventListener('submit', (event)=>{
+      event.preventDefault();
+      const message = wrap.querySelector('#commentMessage').value.trim();
+      const rating = Number(wrap.querySelector('#commentRating').value) || 5;
+      if(!message){
+        toast('Escreva algo antes de enviar.');
+        return;
+      }
+      const user = currentUser();
+      const author = user?.email?.split('@')[0] || 'Anônimo';
+      const comment = addComment(kind, id, {
+        author,
+        role: user ? 'Membro FLIXORA' : 'Visitante',
+        rating,
+        message,
+      });
+      const list = wrap.querySelector('.comment-list');
+      if(list){
+        list.insertAdjacentHTML('afterbegin', commentHTML(comment));
+      }
+      commentForm.reset();
+      toast('Comentário publicado.');
+    });
+  }
 
   return wrap;
 }

@@ -28,11 +28,9 @@ export async function PlayerView({ kind, id }){
       <div class="player-notice">
         <span>🔒</span>
         <div>
-          <strong>Este título ainda não está liberado para exibição.</strong>
-          O FLIXORA está em fase de pré-lançamento e aguarda o fechamento de licenças com distribuidoras.
-          O player abaixo já está 100% funcional — assim que o conteúdo licenciado estiver disponível,
-          basta substituir a fonte de vídeo (mp4/HLS) e ele entra em produção automaticamente. Por ora,
-          está exibindo um vídeo de demonstração de licença pública (Creative Commons — Blender Foundation).
+          <strong>Os servidores de reprodução estão em desenvolvimento.</strong>
+          O FLIXORA já conta com player e interface de streaming, mas o catálogo licenciado ainda será conectado.
+          Você pode navegar, montar sua lista e acompanhar os comentários enquanto a plataforma fica pronta.
         </div>
       </div>
       <h1>${title}</h1>

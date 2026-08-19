@@ -5,12 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>FLIXORA — Seu universo de entretenimento</title>
 <meta name="description" content="FLIXORA — filmes, séries, animações e documentários em um só lugar." />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%237C3AED'/%3E%3Cpath d='M32 24 L32 76 L46 76 L46 56 L64 56 L64 44 L46 44 L46 36 L70 36 L70 24 Z' fill='%23F5F5F5'/%3E%3C/svg%3E" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='100' y2='100'%3E%3Cstop stop-color='%23FAD961'/%3E%3Cstop offset='0.45' stop-color='%23F76B1C'/%3E%3Cstop offset='1' stop-color='%23A855F7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='28' fill='%230D0D14'/%3E%3Crect x='10' y='10' width='80' height='80' rx='22' fill='url(%23g)' opacity='0.96'/%3E%3Cpath d='M32 28h14v42h18v10H32V28zm23 0h14v62H55V28z' fill='%2305070C'/%3E%3Cpath d='M54 58l18-12v13l-18 12V58z' fill='%23F7F7F9' opacity='0.96'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://image.tmdb.org" />
 <meta name="theme-color" content="#08080C" />
 <link rel="manifest" href="manifest.json" />
-<link rel="stylesheet" href="css/style.css" />
-<link rel="stylesheet" href="css/player.css" />
+<link rel="stylesheet" href="CSS/style.css?v=20260813-2" />
+<link rel="stylesheet" href="CSS/player.css?v=20260813-2" />
 </head>
 <body>
 
@@ -18,10 +21,18 @@
 <header class="topbar" id="topbar">
   <div class="topbar__inner">
     <a href="#/" class="brand" aria-label="FLIXORA — início">
-      <svg class="brand__mark" width="34" height="34" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100" height="100" rx="24" fill="url(#g)"/>
-        <path d="M32 24 L32 76 L46 76 L46 56 L64 56 L64 44 L46 44 L46 36 L70 36 L70 24 Z" fill="#F5F5F5"/>
-        <defs><linearGradient id="g" x1="0" y1="0" x2="100" y2="100"><stop stop-color="#A855F7"/><stop offset="1" stop-color="#7C3AED"/></linearGradient></defs>
+      <svg class="brand__mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="flixoraLogoPrime" x1="0" y1="0" x2="100" y2="100">
+            <stop stop-color="#FAD961"/>
+            <stop offset="0.45" stop-color="#F76B1C"/>
+            <stop offset="1" stop-color="#A855F7"/>
+          </linearGradient>
+        </defs>
+        <rect width="100" height="100" rx="28" fill="#0D0D14"/>
+        <rect x="10" y="10" width="80" height="80" rx="22" fill="url(#flixoraLogoPrime)" opacity="0.96"/>
+        <path d="M32 28h14v42h18v10H32V28zm23 0h14v62H55V28z" fill="#05070C"/>
+        <path d="M54 58l18-12v13l-18 12V58z" fill="#F7F7F9" opacity="0.96"/>
       </svg>
       <span class="brand__word">FLIXORA</span>
     </a>
@@ -33,6 +44,9 @@
       <a href="#/generos" data-route="/generos">Gêneros</a>
       <a href="#/em-alta" data-route="/em-alta">Em alta</a>
       <a href="#/favoritos" data-route="/favoritos">Favoritos</a>
+      <a href="#/netflix" data-route="/netflix">Netflix</a>
+      <a href="#/disney" data-route="/disney">Disney+</a>
+      <a href="#/lancamentos" data-route="/lancamentos">Lançamentos</a>
       <a href="#/premium" data-route="/premium" class="nav-premium">👑 Premium</a>
     </nav>
 
@@ -43,7 +57,7 @@
       <button class="icon-btn nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
-      <button class="avatar-btn" id="profileBtn" aria-label="Perfil">P</button>
+      <button class="avatar-btn" id="profileBtn" aria-label="Perfil">Entrar</button>
     </div>
   </div>
 
@@ -91,6 +105,6 @@
 
 <div id="toast" class="toast" hidden></div>
 
-<script type="module" src="js/app.js"></script>
+<script type="module" src="js/app.js?v=20260813-2"></script>
 </body>
 </html>
